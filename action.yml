@@ -1,35 +1,27 @@
 name: 'Hello World'
-description: 'Greet someone'
+description: 'Run an apply pattern'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  pattern: 
+    description: 'Pattern To run'
     required: true
-    default: 'World'
-outputs:
-  random-number:
-    description: "Random number"
-    value: ${{ steps.random-number-generator.outputs.random-number }}
+  testFile: 
+    description: 'File to apply pattern to'
+    required: true
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
-    - name: Set Greeting
-      run: echo "Hello $INPUT_WHO_TO_GREET."
+    - name: install grit
       shell: bash
-      env:
-        INPUT_WHO_TO_GREET: ${{ inputs.who-to-greet }}
-
-    - name: Random Number Generator
-      id: random-number-generator
-      run: echo "random-number=$(echo $RANDOM)" >> $GITHUB_OUTPUT
+      id: download
+      run: |
+        curl -fsSL https://docs.grit.io/install | bash
+    - name: init grit
+      id: init
       shell: bash
-
-    - name: Set GitHub Path
-      run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
+      run: |
+        grit init
+    - name: run grit check
+      id: check
       shell: bash
-      env:
-        GITHUB_ACTION_PATH: ${{ github.action_path }}
-
-    - name: Run goodbye.sh
-      run: goodbye.sh
-      shell: bash
-
+      run: |
+        grit apply ${{ inputs.pattern }} ${{ inputs.testfile }}

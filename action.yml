@@ -24,4 +24,4 @@ runs:
       id: check
       shell: bash
       run: |
-        grit apply ${{ inputs.pattern }} ${{ inputs.testFile }}
+        grit apply --force ${{ inputs.pattern }} ${{ inputs.testFile }}
